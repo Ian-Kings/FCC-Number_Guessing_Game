@@ -51,3 +51,12 @@ do
     echo "It's higher than that, guess again:"
   fi
 done
+
+if [[ -z $USER_DATA ]]
+then
+  $PSQL "INSERT INTO users(username, games_played, best_game) VALUES('$SAFE_USERNAME', 1, $GUESSES)" > /dev/null
+else
+  $PSQL "UPDATE users SET games_played = games_played + 1, best_game = LEAST(best_game, $GUESSES) WHERE username = '$SAFE_USERNAME'" > /dev/null
+fi
+
+echo "You guessed it in $GUESSES tries. The secret number was $SECRET_NUMBER. Nice job!"
